@@ -6,6 +6,7 @@ public class ItemStack {
 	private int ID = 0;
 	private int stack = 0;
 	private int maxStack = 32;
+	private int toolHealth = -1;
 
 	public ItemStack(int x, int y, int ID) {
 		this.x = x;
@@ -46,5 +47,13 @@ public class ItemStack {
 
 	public int getMaxStack() {
 		return this.maxStack;
+	}
+	public int getToolHealth()
+	{
+		return this.toolHealth;
+	}
+	public void setToolHealth(int health)
+	{
+		this.toolHealth = health;
 	}
 }

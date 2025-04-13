@@ -26,6 +26,7 @@ public class GameManager extends AbstractGame
 	private ImageTile background;
 	public int itemIDInHand = -1;
 	public int itemCountInHand = 0;
+	public int itemToolHealthInHand = -1;
 	protected int tickcount = 0;
 	protected int tickcap = 20;
 	protected int rendercount = 0;
@@ -58,7 +59,7 @@ public class GameManager extends AbstractGame
 	public void update(GameContainer gc, float dt, Renderer r) {
 		//sun
 		this.tickcount ++;
-		if (this.tickcount == this.tickcap) {
+		if (this.tickcount >= this.tickcap) {
 			this.tickcount = 0;
 			this.sunY ++;
 			if (this.sunY > 1024) {
@@ -67,14 +68,14 @@ public class GameManager extends AbstractGame
 		}
 		
 		//world amb color thing
-		if (World.currentZ >= 64) {
-			Renderer.desAmbColor = Renderer.normalAmbColor;
-		}else {
-			Renderer.desAmbColor = Renderer.miningAmbColor;
+		if (!GuiBase.isGuiOpen) {
+			if (World.currentZ >= 64) {
+				Renderer.desAmbColor = Renderer.normalAmbColor;
+			}else {
+				Renderer.desAmbColor = Renderer.miningAmbColor;
+			}
 		}
-		if (GuiBase.isGuiOpen) {
-			Renderer.ambColor = Renderer.desAmbColor;
-		}
+		Renderer.ambColor = Renderer.desAmbColor;
 		//handle player logic
 		Player.PlayerLogic(this, gc);
 		TileEntityRegistry.tileLogics(this, gc);
@@ -103,17 +104,28 @@ public class GameManager extends AbstractGame
 				for (int yy = 0; yy < 32; yy++) {
 					int floor = currentChunk.getBlockID(xx, yy, World.currentZ-1);
 					int blockatlevel = currentChunk.getBlockID(xx, yy, World.currentZ);
-					if (!(floor == -1) && World.currentZ >= 64) {
+					boolean blockRndr = currentChunk.canRenderBlock(xx, yy, World.currentZ);
+					if (!(floor == -1) && World.currentZ >= 64 && blockRndr) {
 						r.drawImage(BlockRegistry.getImageFromID(floor), xx*16, yy*16);
 					}else{
-						r.drawImageTile(background, xx*16, yy*16, 1, 0);
+						if (blockRndr) {
+							if (World.currentZ >= 64) {
+								r.drawImageTile(background, xx*16, yy*16, 1, 0);
+							}else {
+								r.drawImageTile(background, xx*16, yy*16, 0, 0);
+							}
+						}
 					}
-					if (!(blockatlevel == -1)) {
+					if (!(blockatlevel == -1) && blockRndr) {
 						r.drawImage(BlockRegistry.getImageFromID(blockatlevel), xx*16, yy*16);
+					}
+					if (!(blockatlevel == -1) && !blockRndr) {
+						r.drawImage(BlockRegistry.getImageFromID(0), xx*16, yy*16);
 					}
 
 				}
 			}
+			//draw items on ground
 			for (int i = 0; i < currentChunk.getItemsInChunk().size(); i++) {
 				if (currentChunk.getItemsInChunk().get(i).getZ() == World.currentZ || currentChunk.getItemsInChunk().get(i).getZ() == World.currentZ-1) {
 					r.drawImage(currentChunk.getItemsInChunk().get(i).getImage(), currentChunk.getItemsInChunk().get(i).getX(), currentChunk.getItemsInChunk().get(i).getY());

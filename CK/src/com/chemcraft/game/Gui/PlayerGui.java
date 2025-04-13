@@ -8,6 +8,7 @@ import com.chemcraft.engine.gfx.Image;
 import com.chemcraft.game.GameManager;
 import com.chemcraft.game.items.ItemRegistry;
 import com.chemcraft.game.math.Crafting;
+import com.chemcraft.game.math.Misc;
 import com.chemcraft.game.player.Player;
 
 public class PlayerGui extends GuiBase
@@ -62,6 +63,7 @@ public class PlayerGui extends GuiBase
 		r.drawImage(Player.hotbar_img, hotbaroffx, hotbaroffy);
 		Player.drawinv(r, gc, Player.hotbar, hotbaroffx - super.getX(), hotbaroffy - super.getY(), super.getX(), super.getY());
 		r.drawImage(Player.hotbar_selected_img, Player.hotbar[Player.selected][0].getX() + (Player.hotbar[Player.selected][0].getX() / 4) + hotbaroffx, hotbaroffy);
+		r.drawFillRect(this.hotbaroffx, this.hotbaroffy-4, 4, Player.getSelectedHealth(), Misc.getHealthColor(Player.getSelectedHealth()));
 	}
 
 	public void handleLeftClick(GameManager gm, GameContainer gc) {

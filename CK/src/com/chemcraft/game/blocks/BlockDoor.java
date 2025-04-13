@@ -10,12 +10,10 @@ public class BlockDoor extends BlockBase
 
 	public BlockDoor(String name, String unlocalized_name, int itemDropID) {
 		super(name, unlocalized_name, itemDropID);
-		// TODO Auto-generated constructor stub
 	}
 	@Override
 	public void doWhenRightClick(int x, int y, int z) {
 		TileEntityRegistry.handleTileRightClick(x, y, z);
-		
 	}
 	@Override
 	public void doOnCreate(int x, int y, int z, GameManager gm, GameContainer gc) {

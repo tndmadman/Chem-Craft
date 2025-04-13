@@ -94,11 +94,8 @@ public class GuiBase
 	public void setCanGuiRender(Boolean canGuiRender) {
 		GuiBase.isGuiOpen = canGuiRender;
 		this.canGuiRender = canGuiRender;
-		if (this.canGuiRender) {
-			Renderer.desAmbColor = 0XFFFFFFFF;
-		}else{
-			Renderer.ambColor = Renderer.desAmbColor;
-		}
+		Renderer.desAmbColor = 0XFFFFFFFF;
+
 	}
 
 	public boolean canGuiRender() {

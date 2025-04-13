@@ -27,7 +27,11 @@ public class TileEntityRegistry
 	public static void renderTiles(GameManager gm, Renderer r)
 	{
 		for (int i = 0; i < World.getLoadedChunk().getTilesInChunk().size(); i++) {
-			World.getLoadedChunk().getTilesInChunk().get(i).tileGraphics(gm, r);
+			
+			if (World.getLoadedChunk().getTilesInChunk().get(0).getZ() == World.currentZ) {
+				World.getLoadedChunk().getTilesInChunk().get(i).tileGraphics(gm, r);
+			}
+			
 		}
 	}
 	public static void tileLogics(GameManager gm, GameContainer gc)

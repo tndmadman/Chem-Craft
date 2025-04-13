@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.chemcraft.game.world.World"/>
 <fullyQualifiedTypeName name="com.chemcraft.engine.Renderer"/>
 <fullyQualifiedTypeName name="com.chemcraft.game.Gui.GuiBase"/>
+<fullyQualifiedTypeName name="com.chemcraft.game.blocks.BlockRegistry"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="com.chemcraft.game.tileentity.TileSmelter"/>
+<fullyQualifiedTypeName name="com.chemcraft.game.inventorys.InventoryBase"/>
+<fullyQualifiedTypeName name="java.lang.SuppressWarnings"/>
+<fullyQualifiedTypeName name="java.lang.StackTraceElement"/>
+<fullyQualifiedTypeName name="com.chemcraft.game.items.ItemBase"/>
+<fullyQualifiedTypeName name="com.chemcraft.game.world.World"/>
+<fullyQualifiedTypeName name="java.applet.Applet"/>
+<fullyQualifiedTypeName name="com.chemcraft.game.math.Misc"/>
+<fullyQualifiedTypeName name="com.chemcraft.game.player.Player"/>
+<fullyQualifiedTypeName name="com.chemcraft.game.items.ItemRegistry"/>
 </qualifiedTypeNameHistroy>

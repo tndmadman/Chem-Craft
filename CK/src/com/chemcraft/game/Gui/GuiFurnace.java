@@ -45,6 +45,7 @@ public class GuiFurnace extends GuiBase
 		
 		Player.drawinv(r, gc, TileSmelter.currentinventory.getOutput(), super.getX(), super.getY());//draw output
 		r.drawFillRect(super.getX()+126, super.getY()+68, 4, TileSmelter.publiccraftingtime / 16 -1, 0XFFFF0000);
+		r.drawFillRect(super.getX()+17, super.getY()+131, 4, TileSmelter.publicfuellevel*5, 0XFFFF0000);
 	}
 	@Override
 	public void handleRightClick(GameManager gm, GameContainer gc) {

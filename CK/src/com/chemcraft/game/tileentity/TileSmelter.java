@@ -1,5 +1,6 @@
 package com.chemcraft.game.tileentity;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.chemcraft.engine.GameContainer;
@@ -32,10 +33,10 @@ public class TileSmelter extends TileEntityBase
 	protected boolean isActive = false;
 	protected InventoryBase inventory;
 	public static InventoryBase currentinventory;
-	
 	protected float fuellevel = 0f;
 	protected int craftingtime = 0;
 	public static int publiccraftingtime;
+	public static int publicfuellevel;
 	protected int craftingtimemax = 200;
 	public TileSmelter()
 	{
@@ -95,21 +96,22 @@ public class TileSmelter extends TileEntityBase
 	@Override
 	public void tileLogic(GameManager gm, GameContainer gc) {
 		//handle the crafting/smelting shit
-		//should add fuel to the tile, will compare agenst other fuel sources later
 		if (this.fuellevel < 20) {
-			if (inventory.getInternal()[1].getID() == 20) {
-				if (inventory.getInternal()[1].getMaxStack() == 0) {
-					this.fuellevel += 20f;
+			float fuelput = Smelting.isFuel(inventory.getInternal()[1].getID());
+			if (!(fuelput == -1)) {
+				if (inventory.getInternal()[1].getStack() <= 0) {
+					this.fuellevel += fuelput;
 					inventory.getInternal()[1].setID(-1);
 					inventory.getInternal()[1].setStack(0);
 				}else{
-					this.fuellevel += 20f;
+					this.fuellevel += fuelput;
 					inventory.getInternal()[1].setStack(inventory.getInternal()[1].getStack() -1);
 				}
 			}
 		}
 		if (fuellevel > 4) {
 			publiccraftingtime = this.craftingtime;
+			publicfuellevel = (int) this.fuellevel;
 			int testOutputID = Smelting.testRecipie(inventory.getInternalStackID(0));
 			if (testOutputID == -1) {
 				return;
@@ -140,4 +142,5 @@ public class TileSmelter extends TileEntityBase
 		}
 		
 	}
+	
 }

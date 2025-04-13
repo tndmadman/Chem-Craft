@@ -14,6 +14,10 @@ public class ItemBase {
 	private int y = 0;
 	private int z = 0;
 	private int ID = 0;
+	private int toolTier = -1;
+	private int toolEffectivness = 1;
+	private int toolHealth = -1;
+	private boolean canStack = true;
 	
 	
 	public ItemBase(int ID,String name, String unlocalizedname, int blocktype, float weight)
@@ -45,6 +49,24 @@ public class ItemBase {
 				this.y += 1;
 			}
 		}
+	}
+	public int getToolEffectivness()
+	{
+		return this.toolEffectivness;
+	}
+	public ItemBase setToolEffectiveness(int tooleffectivness)
+	{
+		this.toolEffectivness = tooleffectivness;
+		return this;
+	}
+	public int getToolTier()
+	{
+		return this.toolTier;
+	}
+	public ItemBase setToolTier(int toolTier)
+	{
+		this.toolTier = toolTier;
+		return this;
 	}
 	public Image getImage()
 	{
@@ -92,7 +114,26 @@ public class ItemBase {
 	{
 		this.ID = ID;
 	}
-	public void doOnUse(){
+	public void doOnUse(int x, int y, int z){
 		
 	}
+	public ItemBase setToolHealth(int health)
+	{
+		this.toolHealth = health;
+		return this;
+	}
+	public int getToolHealth()
+	{
+		return this.toolHealth;
+	}
+	public ItemBase setCanStack(boolean canStack)
+	{
+		this.canStack = canStack;
+		return this;
+	}
+	public boolean canStack()
+	{
+		return this.canStack;
+	}
+	
 }

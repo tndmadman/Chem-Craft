@@ -16,7 +16,7 @@ public class ItemRegistry {
 		registeredItems.add(item = new ItemBase(0, "Cobble", "cobble", 24, 1.0f));
 		registeredItems.add(item = new ItemBase(1, "Dirt", "dirt", 2, 1.0f));
 		registeredItems.add(item = new ItemBase(2, "Sand", "sand", 4, 1.0f));
-		registeredItems.add(item = new ItemBase(3, "Log", "oaklog", 5, 1.0f));
+		registeredItems.add(item = new ItemBase(3, "Oak Log", "oaklog", 5, 1.0f));
 		registeredItems.add(item = new ItemBase(4, "Planks", "oakplank", 7, 1.0f));
 		registeredItems.add(item = new ItemBase(5, "Coal ore", "coalore", 9, 1.0f));
 		registeredItems.add(item = new ItemBase(6, "Iron Ore", "ironore", 10, 1.0f));
@@ -63,6 +63,14 @@ public class ItemRegistry {
 		registeredItems.add(item = new ItemBase(47, "Cherry Plank", "cherryplank", 34, 1.0f));
 		registeredItems.add(item = new ItemBase(48, "Pine Plank", "pineplank", 35, 1.0f));
 		registeredItems.add(item = new ItemBase(49, "Furnace", "furnace", 36, 1.0f));
+		registeredItems.add(item = new ItemBase(50, "Charcoal", "charcoaldust", -1, 1.0f));
+		registeredItems.add(item = new ItemBase(51, "Wood Pick", "woodpick", -1, 1.0f).setToolTier(2).setToolEffectiveness(2).setToolHealth(20).setCanStack(false));
+		registeredItems.add(item = new ItemBase(52, "Stone Pick", "stonepick", -1, 1.0f).setToolTier(3).setToolEffectiveness(4).setToolHealth(40).setCanStack(false));
+		registeredItems.add(item = new ItemBase(53, "Iron Pick", "ironpick", -1, 1.0f).setToolTier(4).setToolEffectiveness(10).setToolHealth(60).setCanStack(false));
+		registeredItems.add(item = new ItemBase(54, "Copper Pick", "copperpick", -1, 1.0f).setToolTier(5).setToolEffectiveness(10).setToolHealth(70).setCanStack(false));
+		registeredItems.add(item = new ItemBase(55, "Steel Pick", "steelpick", -1, 1.0f).setToolTier(6).setToolEffectiveness(15).setToolHealth(140).setCanStack(false));
+		
+		
 		
 
 
@@ -73,15 +81,50 @@ public class ItemRegistry {
 	}
 	public static String getNameFromID(int ID)
 	{
+		if(ID == -1)
+		{
+			return null;
+		}
 		return registeredItems.get(ID).getName();
 	}
 	public static float getWeightFromID(int ID)
 	{
+		if(ID == -1)
+		{
+			return -1;
+		}
 		return registeredItems.get(ID).getWeight();
 	}
 	public static int getBlockTypeFromID(int ID)
 	{
+		if(ID == -1)
+		{
+			return -1;
+		}
 		return registeredItems.get(ID).getBlockType();
 	}
-	
+	public static int getToolTier(int ID)
+	{
+		if(ID == -1)
+		{
+			return -1;
+		}
+		return registeredItems.get(ID).getToolTier();
+	}
+	public static int getToolEffectiveness(int ID)
+	{
+		if(ID == -1)
+		{
+			return -1;
+		}
+		return registeredItems.get(ID).getToolEffectivness();
+	}
+	public static int getNewToolHealth(int ID)
+	{
+		return registeredItems.get(ID).getToolHealth();
+	}
+	public static boolean canStack(int ID)
+	{
+		return registeredItems.get(ID).canStack();
+	}
 }

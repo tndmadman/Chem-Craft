@@ -41,6 +41,10 @@ public class Player
 	public static int mapY = 0;
 	protected static int timer = 0;
 	protected static int maxTimer = 20;
+	//for tracking and breaking blocks
+	protected static int blockHealth = 0;
+	protected static int blockx = 0;
+	protected static int blocky = 0;
 
 	public static Image hotbar_img;
 	public static void initPlayer(){
@@ -67,6 +71,10 @@ public class Player
 		{
 			hotbar[xx][0] = grid = new ItemStack(xx * 16, 0, -1);
 		}
+		hotbar[0][0].setID(49);
+		hotbar[0][0].setStack(1);
+		hotbar[1][0].setID(43);
+		hotbar[1][0].setStack(5);
 		
 		
 		
@@ -112,8 +120,6 @@ public class Player
 				moveDown();
 			}
 			if (gc.getInput().isKey(KeyEvent.VK_SHIFT)) {
-				System.out.println(World.currentZ);
-				System.out.println(World.getLoadedChunk().getBlockID(x, y, 63));
 				if (World.getLoadedChunk().getBlockID(x, y, 63) == 23) {
 					if (World.currentZ < 64) {
 						World.currentZ += 1;
@@ -121,8 +127,6 @@ public class Player
 				}
 			}
 			if (gc.getInput().isKey(KeyEvent.VK_CONTROL)) {
-				System.out.println(World.currentZ);
-				System.out.println(World.getLoadedChunk().getBlockID(x, y, 63));
 				if (World.getLoadedChunk().getBlockID(x, y, 63) == 23) {
 					if (World.currentZ > 1) {
 						World.currentZ -= 1;
@@ -189,7 +193,7 @@ public class Player
 				if (GuiBase.guis.get(i).canGuiRender() == false) {
 					if (!(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ) == -1)) {
 						BlockRegistry.registeredBlocks.get(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ)).doWhenRightClick(gm.cX, gm.cY, World.currentZ);;
-
+						return;
 					}
 				}else{
 					GuiBase.guis.get(i).handleRightClick(gm, gc);
@@ -202,7 +206,7 @@ public class Player
 		{
 			timer = 0;
 			
-			
+			//GUI stuff
 			for (int i = 0; i < GuiBase.guis.size(); i++) {
 				if (GuiBase.guis.get(i).canGuiRender()) {
 					GuiBase.guis.get(i).handleLeftClick(gm, gc);
@@ -210,7 +214,7 @@ public class Player
 				}
 			}
 			
-
+			//block placing
 			if (World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ-1 ) == -1 && isEnoughInSlot()) {
 				//place block at first level
 					World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ-1, ItemRegistry.getBlockTypeFromID(hotbar[selected][0].getID()));
@@ -221,32 +225,43 @@ public class Player
 					World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ, ItemRegistry.getBlockTypeFromID(hotbar[selected][0].getID()));
 					BlockRegistry.registeredBlocks.get(ItemRegistry.getBlockTypeFromID(hotbar[selected][0].getID())).doOnCreate(gm.cX, gm.cY, World.currentZ, gm, gc);;
 					removeItem();
+					
 			}
 			
-			
-			//only tunnle 1 when mining
-			else if (!(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ) == -1) && World.currentZ < 64) {
+			//block breaking
+			else if (!(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ) == -1) && World.currentZ < 64 && testToolTier(gm, World.currentZ)) {
 				//break block at first level
-				BlockRegistry.registeredBlocks.get(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ)).doWhenDestroyed(gm, gc);
-				World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ, -1);
-				return;
+				if(!(testBlockHealth(gm, World.currentZ))) {return;}
+				else{
+					BlockRegistry.registeredBlocks.get(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ)).doWhenDestroyed(gm, gc);
+					World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ, -1);
+				}
 			}
 			
 			
 			
 			//act as normal on the serfice
-			else if (!(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ+1) == -1)) {
+			else if (!(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ+1) == -1)&&World.currentZ == 64 && testToolTier(gm, World.currentZ+1)) {
 				//break block at second level
-				BlockRegistry.registeredBlocks.get(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ+1)).doWhenDestroyed(gm, gc);
-				World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ+1, -1);
-			}else if (!(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ) == -1)) {
+				if(!(testBlockHealth(gm, World.currentZ+1))) {return;}
+				else{
+					BlockRegistry.registeredBlocks.get(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ+1)).doWhenDestroyed(gm, gc);
+					World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ+1, -1);
+				}
+			}else if (!(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ) == -1)&&World.currentZ == 64  && testToolTier(gm, World.currentZ)) {
 				//break block at first level
-				BlockRegistry.registeredBlocks.get(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ)).doWhenDestroyed(gm, gc);
-				World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ, -1);
-			}else if (!(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ-1) == -1)) {
+				if(!(testBlockHealth(gm, World.currentZ))) {return;}
+				else{
+					BlockRegistry.registeredBlocks.get(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ)).doWhenDestroyed(gm, gc);
+					World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ, -1);
+				}
+			}else if (!(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ-1) == -1)&&World.currentZ == 64 &&testToolTier(gm, World.currentZ-1)) {
 				//break block at first level
-				BlockRegistry.registeredBlocks.get(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ-1)).doWhenDestroyed(gm, gc);
-				World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ-1, -1);
+				if(!(testBlockHealth(gm, World.currentZ-1))) {return;}
+				else{
+					BlockRegistry.registeredBlocks.get(World.getLoadedChunk().getBlockID(gm.cX, gm.cY, World.currentZ-1)).doWhenDestroyed(gm, gc);
+					World.getLoadedChunk().setBlockID(gm.cX, gm.cY, World.currentZ-1, -1);
+				}
 			}
 
 
@@ -259,6 +274,71 @@ public class Player
 	
 	
 	
+	private static boolean testToolTier(GameManager gm, int z) {
+		
+		//grab ID's for testing perams
+		int blockID = World.getLoadedChunk().getBlockID(gm.cX, gm.cY, z);
+		int itemID = hotbar[selected][0].getID();
+		int toolTier;
+		int blockTier;
+		//if there are no tools set a fault value;
+		if (itemID == -1) 
+		{
+			toolTier = 1;
+		}else {
+			toolTier = ItemRegistry.getToolTier(itemID);
+		}
+		//if there are no blocks set the fault value
+		if (blockID == -1)
+		{
+			blockTier = 0;
+		}else {
+			blockTier = BlockRegistry.getToolTier(blockID);
+		}
+		
+		
+		
+
+		if (toolTier >= blockTier || blockTier == -1) 
+		{
+			//done when tool matches block tier
+			
+			return true;
+		}
+		return false;
+	}
+	private static boolean testBlockHealth(GameManager gm, int z)
+	{
+		int blockID = World.getLoadedChunk().getBlockID(gm.cX, gm.cY, z);
+		if (blockID == -1) {
+			blockID = 0;
+		}
+		int itemID = hotbar[selected][0].getID();
+		if(itemID == -1)
+		{
+			itemID = 0;
+		}
+		if(gm.cX == blockx && gm.cY == blocky)
+		{
+			
+			//confirm that the mouse has not moved and move on
+			blockHealth = blockHealth - ItemRegistry.getToolEffectiveness(itemID);
+			if (blockHealth <= 0) {
+				blockx = gm.cX;
+				blocky = gm.cY;
+				blockHealth = BlockRegistry.getBlockHardness(blockID);
+				//after tool matches tier, and health has depleated on the block. return.
+				//may also be where tool damage gets delt
+				return true;
+			}
+		}else {
+			blockx = gm.cX;
+			blocky = gm.cY;
+			blockHealth = BlockRegistry.getBlockHardness(blockID);
+		}
+		return false;
+	}
+	//load or generate west chunk
 	public static void moveLeft()
 	{
 		currentDirection = 3;
@@ -269,11 +349,11 @@ public class Player
 				x -= 1;
 			}
 		}else{
-			//load or generate south chunk
 			World.genW();
 			x = 31;
 		}
 	}
+	//load or generate east chunk
 	public static void moveRight()
 	{
 		currentDirection = 1;
@@ -285,11 +365,11 @@ public class Player
 				x += 1;
 			}
 		}else{
-			//load or generate east chunk
 			World.genE();
 			x = 0;
 		}
 	}
+	//load or generate north chunk
 	public static void moveUp()
 	{
 		currentDirection = 0;
@@ -300,11 +380,11 @@ public class Player
 				y -= 1;
 			}
 		}else{
-			//load or generate north chunk
 			World.genN();
 			y = 31;
 		}
 	}
+	//load or generate south chunk
 	public static void moveDown()
 	{
 		currentDirection = 2;
@@ -316,7 +396,6 @@ public class Player
 
 			}
 		}else{
-			//load or generate south chunk
 			World.genS();
 			y = 0;
 		}
@@ -341,13 +420,14 @@ public class Player
 							// hand
 							gm.itemIDInHand = inv[xx][yy].getID();
 							gm.itemCountInHand = inv[xx][yy].getStack();
+							gm.itemToolHealthInHand = inv[xx][yy].getToolHealth();
 							inv[xx][yy].setID(-1);
 							inv[xx][yy].setStack(0);
 						} else
 						{
 							// if the hand has something in it that matches then
 							// add it
-							if (gm.itemIDInHand == inv[xx][yy].getID())
+							if (gm.itemIDInHand == inv[xx][yy].getID() && ItemRegistry.canStack(gm.itemIDInHand))
 							{
 								inv[xx][yy].setStack(inv[xx][yy].getStack() + gm.itemCountInHand);
 								gm.itemCountInHand = 0;
@@ -358,10 +438,13 @@ public class Player
 								// swap the items
 								int item = gm.itemIDInHand;
 								int count = gm.itemCountInHand;
+								int health = gm.itemToolHealthInHand;
 								gm.itemIDInHand = inv[xx][yy].getID();
 								gm.itemCountInHand = inv[xx][yy].getStack();
+								gm.itemToolHealthInHand = inv[xx][yy].getToolHealth();
 								inv[xx][yy].setID(item);
 								inv[xx][yy].setStack(count);
+								inv[xx][yy].setToolHealth(health);
 							}
 						}
 
@@ -372,8 +455,10 @@ public class Player
 						{
 							inv[xx][yy].setID(gm.itemIDInHand);
 							inv[xx][yy].setStack(gm.itemCountInHand);
+							inv[xx][yy].setToolHealth(gm.itemToolHealthInHand);
 							gm.itemIDInHand = -1;
 							gm.itemCountInHand = 0;
+							gm.itemToolHealthInHand = -1;
 						}
 					}
 				}
@@ -398,13 +483,15 @@ public class Player
 					// hand
 					gm.itemIDInHand = inv.getID();
 					gm.itemCountInHand = inv.getStack();
+					gm.itemToolHealthInHand = inv.getToolHealth();
 					inv.setID(-1);
 					inv.setStack(0);
+					inv.setToolHealth(-1);
 				} else
 				{
 					// if the hand has something in it that matches then
 					// add it
-					if (gm.itemIDInHand == inv.getID())
+					if (gm.itemIDInHand == inv.getID() && ItemRegistry.canStack(gm.itemIDInHand))
 					{
 						inv.setStack(inv.getStack() + gm.itemCountInHand);
 						gm.itemCountInHand = 0;
@@ -415,10 +502,13 @@ public class Player
 						// swap the items
 						int item = gm.itemIDInHand;
 						int count = gm.itemCountInHand;
+						int health = gm.itemToolHealthInHand;
 						gm.itemIDInHand = inv.getID();
 						gm.itemCountInHand = inv.getStack();
+						gm.itemToolHealthInHand = inv.getToolHealth();
 						inv.setID(item);
 						inv.setStack(count);
+						inv.setToolHealth(health);
 					}
 				}
 
@@ -429,8 +519,10 @@ public class Player
 				{
 					inv.setID(gm.itemIDInHand);
 					inv.setStack(gm.itemCountInHand);
+					inv.setToolHealth(gm.itemToolHealthInHand);
 					gm.itemIDInHand = -1;
 					gm.itemCountInHand = 0;
+					gm.itemToolHealthInHand = -1;
 				}
 			}
 		}
@@ -453,13 +545,15 @@ public class Player
 						// hand
 						gm.itemIDInHand = inv[yy].getID();
 						gm.itemCountInHand = inv[yy].getStack();
+						gm.itemToolHealthInHand = inv[yy].getToolHealth();
 						inv[yy].setID(-1);
 						inv[yy].setStack(0);
+						inv[yy].setToolHealth(-1);
 					} else
 					{
 						// if the hand has something in it that matches then
 						// add it
-						if (gm.itemIDInHand == inv[yy].getID())
+						if (gm.itemIDInHand == inv[yy].getID() && ItemRegistry.canStack(gm.itemIDInHand))
 						{
 							inv[yy].setStack(inv[yy].getStack() + gm.itemCountInHand);
 							gm.itemCountInHand = 0;
@@ -470,10 +564,13 @@ public class Player
 							// swap the items
 							int item = gm.itemIDInHand;
 							int count = gm.itemCountInHand;
+							int health = gm.itemToolHealthInHand;
 							gm.itemIDInHand = inv[yy].getID();
 							gm.itemCountInHand = inv[yy].getStack();
+							gm.itemToolHealthInHand = inv[yy].getToolHealth();
 							inv[yy].setID(item);
 							inv[yy].setStack(count);
+							inv[yy].setToolHealth(health);
 						}
 					}
 
@@ -484,8 +581,10 @@ public class Player
 					{
 						inv[yy].setID(gm.itemIDInHand);
 						inv[yy].setStack(gm.itemCountInHand);
+						inv[yy].setToolHealth(gm.itemToolHealthInHand);
 						gm.itemIDInHand = -1;
 						gm.itemCountInHand = 0;
+						gm.itemToolHealthInHand = -1;
 					}
 				}
 			}
@@ -504,7 +603,7 @@ public class Player
 			{
 				if (gc.getInput().getMouseX() >= drawoffx + invX + inventory[xx][yy].getX() + offx && gc.getInput().getMouseX() <= drawoffx + invX + inventory[xx][yy].getX() + offx + 16 && gc.getInput().getMouseY() >= drawoffy + invY + inventory[xx][yy].getY() + offy && gc.getInput().getMouseY() <= drawoffy + invY + inventory[xx][yy].getY() + offy + 16)
 				{
-					if (inventory[xx][yy].getID() == -1 && !(gm.itemIDInHand == -1))
+					if (inventory[xx][yy].getID() == -1 && !(gm.itemIDInHand == -1) && ItemRegistry.canStack(gm.itemIDInHand))
 					{
 						// if the hand has stuff and the slot does not add 1 to
 						// the slot
@@ -536,7 +635,7 @@ public class Player
 		{
 			if (gc.getInput().getMouseX() >= drawoffx + invX + inventory[yy].getX() + offx && gc.getInput().getMouseX() <= drawoffx + invX + inventory[yy].getX() + offx + 16 && gc.getInput().getMouseY() >= drawoffy + invY + inventory[yy].getY() + offy && gc.getInput().getMouseY() <= drawoffy + invY + inventory[yy].getY() + offy + 16)
 			{
-				if (inventory[yy].getID() == -1 && !(gm.itemIDInHand == -1))
+				if (inventory[yy].getID() == -1 && !(gm.itemIDInHand == -1) && ItemRegistry.canStack(gm.itemIDInHand))
 				{
 					// if the hand has stuff and the slot does not add 1 to
 					// the slot
@@ -568,9 +667,10 @@ public class Player
 				{
 					invArray[xx][yy].setID(ID);
 					invArray[xx][yy].setStack(1);
+					invArray[xx][yy].setToolHealth(ItemRegistry.getNewToolHealth(ID));
 					return;
 				}
-				if (invArray[xx][yy].getID() == ID)
+				if (invArray[xx][yy].getID() == ID && ItemRegistry.canStack(ID))
 				{
 					invArray[xx][yy].setStack(invArray[xx][yy].getStack() + 1);
 					return;
@@ -584,12 +684,16 @@ public class Player
 		{
 			if (!(output.getID() == -1) && gm.itemIDInHand == -1)
 			{
+				//pulls item out like normal
 				gm.itemIDInHand = output.getID();
 				gm.itemCountInHand = output.getStack();
+				gm.itemToolHealthInHand = output.getToolHealth();
 				output.setID(-1);
 				output.setStack(0);
+				output.setToolHealth(-1);
 				for (int xx = 0; xx < 3; xx++)
 				{
+					
 					for (int yy = 0; yy < 3; yy++)
 					{
 						if (craftingGrid[xx][yy].getStack() > 1)
@@ -605,8 +709,9 @@ public class Player
 				}
 
 			}
-			if (output.getID() == gm.itemIDInHand)
+			if (output.getID() == gm.itemIDInHand && ItemRegistry.canStack(output.getID()))
 			{
+				//stacks the item if it can
 				gm.itemCountInHand = gm.itemCountInHand + output.getStack();
 				output.setID(-1);
 				output.setStack(0);
@@ -633,7 +738,18 @@ public class Player
 
 	
 	
-	
+	public static int getSelectedHealth()
+	{
+		int itemHealth = -1;
+		int itemID = hotbar[selected][0].getID();
+		
+		if (!(itemID == -1)) {
+			itemHealth = hotbar[selected][0].getToolHealth();
+		}
+		
+		
+		return itemHealth;
+	}
 	public static int getSelectedID() {
 		int blockID = -1;
 		int itemID = hotbar[selected][0].getID();
@@ -642,7 +758,6 @@ public class Player
 		{
 			blockID = ItemRegistry.registeredItems.get(itemID).getBlockType();
 		}
-		System.out.println(blockID);
 
 		return blockID;
 	}
@@ -663,6 +778,7 @@ public class Player
 		if (hotbar[selected][0].getStack() == 0)
 		{
 			hotbar[selected][0].setID(-1);
+			hotbar[selected][0].setToolHealth(-1);
 		}
 	}
 	public static void drawinv(Renderer r, GameContainer gc, ItemStack[][] invArray, int offx, int offy, int invX, int invY) {
@@ -764,7 +880,7 @@ public class Player
 	
 	public static void drawPlayerStuff(Renderer r)
 	{
-		//draw the player image
+		//draw the player image and maybe other effects here
 		r.drawImageTile(playerImage, x*16, y*16, currentDirection, 0);
 	}
 	

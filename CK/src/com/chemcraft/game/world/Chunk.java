@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.chemcraft.game.inventorys.InventoryBase;
-import com.chemcraft.game.inventorys.InvetoryRegistry;
 import com.chemcraft.game.items.ItemBase;
 import com.chemcraft.game.items.ItemRegistry;
 import com.chemcraft.game.math.WorldNoise;
@@ -15,6 +14,7 @@ public class Chunk {
 	private int x = 0;
 	private int y = 0;
 	private int[][][] blocks = new int[32][32][66];
+	private int[][][] blockRndr = new int [32][32][66];
 	private ArrayList<ItemBase> items = new ArrayList<ItemBase>();
 	private ArrayList<TileEntityBase> tiles = new ArrayList<TileEntityBase>();
 	private ArrayList<InventoryBase> inventorys = new ArrayList<InventoryBase>();
@@ -24,7 +24,14 @@ public class Chunk {
 		this.y = y;
 		for (int xx = 0; xx < 32; xx++) {
 			for (int yy = 0; yy < 32; yy++) {
-				//gen the top layer
+				for (int zz = 0; zz < 3; zz++) {
+					this.blockRndr[xx][yy][zz+63] = 1;
+				}
+			}
+		}
+		for (int xx = 0; xx < 32; xx++) {
+			for (int yy = 0; yy < 32; yy++) {
+				//gen the floor layer
 					blocks[xx][yy][63] = Regions.getRegionTypeSurfice(offX + xx, offY + yy, surficenoise);
 			}
 		}
@@ -95,9 +102,20 @@ public class Chunk {
 	{
 		return this.blocks[x][y][z];
 	}
+	public boolean canRenderBlock(int x, int y, int z) {
+		
+		if(this.blockRndr[x][y][z] == 0) {
+			return false;
+		}
+		
+		return true;
+	}
 	public void setBlockID(int x, int y, int z, int ID)
 	{
 		this.blocks[x][y][z] = ID;
+	}
+	public void setBlockRndr(int x, int y, int z, int rndr) {
+		this.blockRndr[x][y][z] = rndr;
 	}
 	public void createItemInChunk(int ID, int x, int y, int z)
 	{
@@ -123,7 +141,6 @@ public class Chunk {
 	{
 		for (int i = 0; i < inventorys.size(); i++) {
 			if (inventorys.get(i).testLoc(x, y, z)) {
-				System.out.println("removed");
 				inventorys.remove(i);
 				return;
 			}
@@ -133,7 +150,6 @@ public class Chunk {
 	{
 		try {
 			inventory.setLoc(x, y, z);
-			System.out.println(inventory.getInternalStackCount(1));
 			inventorys.add((InventoryBase) inventory.clone());
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();

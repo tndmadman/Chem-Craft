@@ -14,13 +14,13 @@ public class BlockRegistry
 	
 	public static void RegisterBlocks(){
 		//0
-		registeredBlocks.add(block = new BlockBase("Stone", "stone", 0).setColidable(true));
+		registeredBlocks.add(block = new BlockBase("Stone", "stone", 0).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(1));
 		//1
 		registeredBlocks.add(block = new BlockBase("Grass", "grass", 1));
 		//2
 		registeredBlocks.add(block = new BlockBase("Dirt", "dirt", 1));
 		//3
-		registeredBlocks.add(block = new BlockBase("Water", "water", -1).setColidable(true));
+		registeredBlocks.add(block = new BlockBase("Water", "water", -1).setColidable(true).setToolTierNeeded(10));
 		//4
 		registeredBlocks.add(block = new BlockBase("Sand", "sand", 2));
 		//5
@@ -32,27 +32,27 @@ public class BlockRegistry
 		//8
 		registeredBlocks.add(block = new BlockLeavs("Leaves", "leaves", -1).setCanOverPlace(true));
 		//9
-		registeredBlocks.add(block = new BlockBase("Coal Ore", "coalore", 5));
+		registeredBlocks.add(block = new BlockBase("Coal Ore", "coalore", 5).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(2));
 		//10
-		registeredBlocks.add(block = new BlockBase("Iron Ore", "ironore", 6));
+		registeredBlocks.add(block = new BlockBase("Iron Ore", "ironore", 6).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(3));
 		//11
-		registeredBlocks.add(block = new BlockBase("Gold Ore", "goldore", 7));
+		registeredBlocks.add(block = new BlockBase("Gold Ore", "goldore", 7).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(4));
 		//12
-		registeredBlocks.add(block = new BlockBase("Diamond Ore", "diamondore", 8));
+		registeredBlocks.add(block = new BlockBase("Diamond Ore", "diamondore", 8).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(5));
 		//13
-		registeredBlocks.add(block = new BlockBase("Emerald Ore", "emeraldore", 9));
+		registeredBlocks.add(block = new BlockBase("Emerald Ore", "emeraldore", 9).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(5));
 		//14
-		registeredBlocks.add(block = new BlockBase("Cobalt Ore", "cobaltore", 10));
+		registeredBlocks.add(block = new BlockBase("Cobalt Ore", "cobaltore", 10).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(4));
 		//15
-		registeredBlocks.add(block = new BlockBase("Copper Ore", "copperore", 11));
+		registeredBlocks.add(block = new BlockBase("Copper Ore", "copperore", 11).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(4));
 		//16
-		registeredBlocks.add(block = new BlockBase("Lithium Ore", "lithiumore", 12));
+		registeredBlocks.add(block = new BlockBase("Lithium Ore", "lithiumore", 12).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(5));
 		//17
-		registeredBlocks.add(block = new BlockBase("Tin Ore", "tinore", 13));
+		registeredBlocks.add(block = new BlockBase("Tin Ore", "tinore", 13).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(4));
 		//18
-		registeredBlocks.add(block = new BlockBase("Uranium Ore", "uraniumore", 14));
+		registeredBlocks.add(block = new BlockBase("Uranium Ore", "uraniumore", 14).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(6));
 		//19
-		registeredBlocks.add(block = new BlockBase("Zinc Ore", "zincore", 15));
+		registeredBlocks.add(block = new BlockBase("Zinc Ore", "zincore", 15).setColidable(true).setLightBlock(Light.FULL).setToolTierNeeded(4));
 		//20
 		registeredBlocks.add(block = new BlockBase("Torch", "torch", 16).setLight(LIGHT_WHITE));
 		//21
@@ -95,7 +95,23 @@ public class BlockRegistry
 	}
 	public static Image getImageFromID(int ID)
 	{
-		return BlockRegistry.registeredBlocks.get(ID).getImage();
+		return registeredBlocks.get(ID).getImage();
+	}
+	public static int getToolTier(int ID)
+	{
+		if(ID == -1)
+		{
+			return -1;
+		}
+		return registeredBlocks.get(ID).getToolTier();
+	}
+	public static int getBlockHardness(int ID)
+	{
+		if(ID == -1)
+		{
+			return -1;
+		}
+		return registeredBlocks.get(ID).getBlockHardness();
 	}
 	public static boolean getCanOverPlace(int ID)
 	{

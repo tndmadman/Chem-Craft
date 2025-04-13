@@ -19,7 +19,7 @@ public class Renderer {
 
 	public static int ambColor = 0XFF859999;
 	public static int desAmbColor = 0XFF859999;
-	public static int miningAmbColor = 0XFF111111;
+	public static int miningAmbColor = 0XFF3d3d3d;
 	public static int normalAmbColor = 0XFF859999;
 	
 

@@ -14,7 +14,7 @@ public class BlockMineHatch extends BlockBase
 @Override
 	public void doOnCreate(int x, int y, int z, GameManager gm, GameContainer gc) {
 		for (int zz = 0; zz < 63; zz++) {
-			World.getLoadedChunk().setBlockID(x, y, zz, -1);
+			World.getLoadedChunk().setBlockID(x, y, zz, 23);
 		}
 	}
 	

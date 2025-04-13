@@ -16,6 +16,8 @@ private boolean colidable = false;
 private boolean canoverplace = false;
 private Light light;
 private boolean haslight = false;
+private int toolTierNeeded = -1;
+private int blockHardness = 5;
 
 
 	public BlockBase(String name, String unlocalized_name, int itemDropID)
@@ -61,6 +63,15 @@ private boolean haslight = false;
 	}
 	public void doWhenDestroyed(GameManager gm, GameContainer gc)
 	{
+		//make the block around them able to render for mining
+		for (int xx = 0; xx < 3; xx++) {
+			for (int yy = 0; yy < 3; yy++) {
+				if (gm.cX+xx-1 < 32 && gm.cX+xx-1 >= 0 && gm.cY+yy-1 < 32 && gm.cY+yy-1 >= 0) {
+					World.getLoadedChunk().setBlockRndr(gm.cX+xx-1, gm.cY+yy-1, World.currentZ, 1);
+				}
+			}
+		}
+		//drop the item relivent to the block
 		if (!(this.itemDropID == -1)) {
 			World.getLoadedChunk().createItemInChunk(this.itemDropID, gm.cX*16, gm.cY*16, World.currentZ);
 		}
@@ -93,4 +104,23 @@ private boolean haslight = false;
 		image.setLightBlock(lightblock);
 		return this;
 	}
+	public int getToolTier()
+	{
+		return this.toolTierNeeded;
+	}
+	public BlockBase setToolTierNeeded(int toolTierNeeded) 
+	{
+		this.toolTierNeeded = toolTierNeeded;
+		return this;
+	}
+	public int getBlockHardness()
+	{
+		return this.blockHardness;
+	}
+	public BlockBase setBlockHardness(int blockhardness)
+	{
+		this.blockHardness = blockhardness;
+		return this;
+	}
+	
 }

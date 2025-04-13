@@ -3,6 +3,8 @@ package com.chemcraft.game.math;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.chemcraft.game.items.ItemRegistry;
+
 public class Crafting
 {
 
@@ -69,6 +71,8 @@ public class Crafting
 		
 		addRecipie(craftint = new int[][] { { 20, 37, -1 }, { -1, -1, -1 }, { -1, -1, -1 } }, 16, 1);//torch
 		
+		addRecipie(craftint = new int[][] { { 50, 37, -1 }, { -1, -1, -1 }, { -1, -1, -1 } }, 16, 1);//torch
+		
 		addRecipie(craftint = new int[][] { { 4, 4, 4 }, { 4, 4, 4 }, { -1, -1, -1 } }, 38, 1);//door
 		
 		addRecipie(craftint = new int[][] { { 44, 44, 44 }, { 44, 44, 44 }, { -1, -1, -1 } }, 38, 1);//door
@@ -103,9 +107,26 @@ public class Crafting
 		addRecipie(craftint = new int[][] { { 47, 47, -1 }, { -1, -1, -1 }, { -1, -1, -1 } }, 37, 4);//pine stick
 
 		addRecipie(craftint = new int[][] { { 0, 0, 0 }, { 0, -1, 0 }, { 0, 0, 0 } }, 49, 1);//furnace
-
 		
+		addRecipie(craftint = new int[][] { { 44, -1, -1 }, { 44, 37, 37 }, { 44, -1, -1 } }, 51, 1);//wood pick
+		
+		addRecipie(craftint = new int[][] { { 45, -1, -1 }, { 45, 37, 37 }, { 45, -1, -1 } }, 51, 1);//wood pick
+		
+		addRecipie(craftint = new int[][] { { 46, -1, -1 }, { 46, 37, 37 }, { 46, -1, -1 } }, 51, 1);//wood pick
+		
+		addRecipie(craftint = new int[][] { { 47, -1, -1 }, { 47, 37, 37 }, { 47, -1, -1 } }, 51, 1);//wood pick
+		
+		addRecipie(craftint = new int[][] { { 48, -1, -1 }, { 48, 37, 37 }, { 48, -1, -1 } }, 51, 1);//wood pick
+		
+		addRecipie(craftint = new int[][] { { 0, -1, -1 }, { 0, 37, 37 }, { 0, -1, -1 } }, 52, 1);//stone pick
+		
+		addRecipie(craftint = new int[][] { { 28, -1, -1 }, { 28, 37, 37 }, { 28, -1, -1 } }, 53, 1);//Iron pick
 
+		addRecipie(craftint = new int[][] { { 26, -1, -1 }, { 26, 37, 37 }, { 26, -1, -1 } }, 54, 1);//copper pick
+		
+		addRecipie(craftint = new int[][] { { 34, -1, -1 }, { 34, 37, 37 }, { 34, -1, -1 } }, 55, 1);//steel pick
+		
+		
 		
 		
 	}
@@ -130,12 +151,12 @@ public class Crafting
 
 			}
 		}
-		System.out.println(itemID);
 		if (!(itemID == -1))
 		{
 			itemstack.setID(output.get(itemID));
 			itemstack.setStack(outputcount.get(itemID));
-			
+
+			itemstack.setToolHealth(ItemRegistry.getNewToolHealth(itemstack.getID()));
 		}
 		return itemstack;
 	}
