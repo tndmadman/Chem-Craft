@@ -1,2 +1,10 @@
 /.metadata/
 /.recommenders/
+.gradle/
+build/
+out/
+*.class
+*.log
+.DS_Store
+.idea/
+.vscode/
