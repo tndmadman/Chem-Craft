@@ -1,0 +1,87 @@
+# Java P2P RTS Starter
+
+A tiny 2D top-down real-time strategy starter written in plain Java/Swing with a simple UDP peer-to-peer networking layer.
+
+This is not a finished game yet. It is a working base that gives you:
+
+- Top-down RTS camera
+- Grid map and resource nodes
+- Local units
+- Mouse box selection
+- Right-click movement commands
+- Basic UDP P2P connection
+- Remote peer spawning
+- Remote movement command replication
+- Gradle build and GitHub Actions CI
+
+## Requirements
+
+- Java 17+
+- Gradle, or use your IDE's Gradle support
+
+## Run solo
+
+```bash
+gradle run
+```
+
+## Run two-player P2P locally
+
+Terminal 1:
+
+```bash
+gradle run --args="--host 50000 --id HOST"
+```
+
+Terminal 2:
+
+```bash
+gradle run --args="--join 127.0.0.1 50000 --id JOIN"
+```
+
+## Run over LAN
+
+On the host machine:
+
+```bash
+gradle run --args="--host 50000 --id HOST"
+```
+
+On the joining machine, replace `HOST_LAN_IP` with the host's LAN IP:
+
+```bash
+gradle run --args="--join HOST_LAN_IP 50000 --id JOIN"
+```
+
+Make sure Windows Firewall allows inbound UDP on the host port.
+
+## Controls
+
+- `WASD` or arrow keys: pan camera
+- Mouse wheel: zoom
+- Left click: select one unit
+- Left drag: box-select units
+- Right click: move selected units
+
+## Current network design
+
+The multiplayer layer is intentionally simple:
+
+- UDP socket per client
+- Host waits on a known port
+- Joiner sends `HELLO`
+- Peers remember each other's address from received packets
+- Movement commands are sent as `MOVE|playerId|unitId|x|y`
+
+This is fine for a prototype. It is not cheat-proof and it does not solve NAT traversal yet.
+
+## Next build steps
+
+1. Add deterministic unit IDs per player instead of local incremental IDs.
+2. Add lobby screen for host/join instead of command-line args.
+3. Add fog of war.
+4. Add resource harvesting.
+5. Add unit production buildings.
+6. Add combat/projectiles.
+7. Add snapshot reconciliation so late joiners get full game state.
+8. Add NAT traversal or relay fallback for internet play.
